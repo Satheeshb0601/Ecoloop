@@ -1,0 +1,330 @@
+/* Saved from Design 1 */
+:root {
+    /* Color Palette - Premium "Eco" Theme */
+    --bg-color: #030f0b; /* Very dark rich green-black */
+    --text-primary: #ffffff;
+    --text-secondary: #a3b8b0;
+    
+    --accent-color: #00e676; /* Very bright neon green */
+    --accent-dark: #00b259;
+    --accent-glow: rgba(0, 230, 118, 0.6);
+    
+    --glass-bg: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-hover: rgba(255, 255, 255, 0.12);
+    
+    --danger: #ff5252;
+    --primary-gradient: linear-gradient(135deg, #00e676 0%, #1de9b6 100%);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Outfit', sans-serif;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    line-height: 1.6;
+}
+
+/* HIGHLY VISIBLE Animated Particle Canvas */
+.particle-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -2; /* Keeps it behind everything else! */
+    pointer-events: none; /* Crucial so we can click the form */
+}
+
+
+/* Utility Classes */
+.text-accent { color: var(--accent-color); }
+.glow-text { text-shadow: 0 0 15px var(--accent-glow); }
+.mt-1 { margin-top: 1rem; }
+.mt-2 { margin-top: 2rem; }
+.p-2 { padding: 2rem; }
+.rounded { border-radius: 16px; }
+
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: visible; /* needed for custom select absolute positioning */
+}
+
+/* Cool border shine effect on glass cards */
+.glass::before {
+    content: ''; position: absolute; top: 0; left: -150%; width: 50%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transform: skewX(-20deg); pointer-events: none;
+    animation: shine 6s infinite;
+}
+@keyframes shine { 
+    0%, 100% { left: -150%; } 
+    50% { left: 200%; } 
+}
+
+.interactable {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+.interactable:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0, 230, 118, 0.15);
+    border-color: rgba(0, 230, 118, 0.4);
+}
+
+.interactable-sm {
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+.interactable-sm:hover {
+    transform: translateY(-4px);
+    background: var(--glass-hover);
+    border-color: rgba(255,255,255,0.3);
+}
+
+
+/* Typography */
+h1, h2, h3, h4, h5 { font-weight: 700; letter-spacing: -0.01em; }
+.title { font-size: 3.5rem; line-height: 1.1; margin-bottom: 1rem; }
+.subtitle { font-size: 1.2rem; color: var(--text-secondary); margin-bottom: 2rem; font-weight: 400; }
+
+/* Navbar */
+.navbar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1rem 2rem; position: sticky; top: 1rem; z-index: 100;
+    margin: 1rem auto; max-width: 900px; width: 90%; border-radius: 50px;
+    animation: slideDown 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+.logo { font-size: 1.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; }
+.logo-icon { 
+    font-size: 1.5rem; 
+    animation: spinSlow 8s linear infinite; 
+    color: var(--accent-color);
+}
+@keyframes spinSlow { 100% { transform: rotate(360deg); } }
+
+.nav-links { list-style: none; display: flex; gap: 1.5rem; }
+.nav-links a {
+    color: var(--text-secondary); text-decoration: none; font-weight: 600;
+    padding: 0.6rem 1.2rem; border-radius: 30px; transition: all 0.3s;
+}
+.nav-links a:hover, .nav-links a.active {
+    color: #000; background: var(--accent-color); box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* Layout */
+.container { max-width: 900px; margin: 0 auto; padding: 2rem 5%; }
+
+/* DYNAMIC VIEW ANIMATIONS - The pop effect when changing views */
+.view { display: none; opacity: 0; }
+.view.active { display: block; animation: popInView 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+@keyframes popInView {
+    0% { opacity: 0; transform: scale(0.9) translateY(40px); }
+    100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes slideDown { from { opacity: 0; transform: translateY(-40px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Heartbeat and Pulse (for buttons) */
+.pulse-anim { animation: pulse 2s infinite; }
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 var(--accent-glow); }
+    70% { box-shadow: 0 0 0 20px rgba(0, 230, 118, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); }
+}
+
+.heartbeat { animation: heartbeat 1.2s infinite ease-in-out; }
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.08); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.08); }
+    70% { transform: scale(1); }
+}
+
+
+/* Forms (Custom Select + Standard Forms) */
+.card { padding: 3rem; background: rgba(0,0,0,0.5); }
+.row { display: flex; gap: 2rem; }
+.half { flex: 1; }
+
+.form-group { margin-bottom: 2rem; display: flex; flex-direction: column; position: relative;}
+label { margin-bottom: 0.8rem; font-weight: 600; font-size: 1.15rem; display: flex; align-items: center; gap: 0.8rem;}
+
+/* CUSTOM SELECT - Fixes native rectangle corner issue */
+.custom-select-wrapper { position: relative; user-select: none; width: 100%; z-index: 50; }
+.custom-select-trigger {
+    width: 100%; padding: 1.2rem; background: rgba(0, 0, 0, 0.6);
+    border: 2px solid var(--glass-border); border-radius: 12px;
+    color: var(--text-secondary); font-size: 1.1rem; cursor: pointer;
+    transition: all 0.3s ease; display: flex; justify-content: space-between; align-items: center;
+}
+.custom-select.open .custom-select-trigger {
+    border-color: var(--accent-color); box-shadow: 0 0 20px var(--accent-glow);
+    background: rgba(0, 0, 0, 0.8);
+    border-bottom-left-radius: 0px; border-bottom-right-radius: 0px;
+}
+.custom-select.open .custom-select-trigger i { transform: rotate(180deg); }
+.custom-select-trigger i { transition: transform 0.3s ease; }
+
+.custom-options {
+    position: absolute; top: 100%; left: 0; right: 0;
+    background: #001209; /* Solid dark specifically to hide background overlap */
+    border: 2px solid var(--accent-color); border-top: none;
+    border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transform: translateY(-10px); transition: all 0.3s ease;
+    z-index: 100; overflow: hidden; box-shadow: 0 15px 30px rgba(0,0,0,0.8);
+}
+.custom-select.open .custom-options { opacity: 1; visibility: visible; pointer-events: all; transform: translateY(0); }
+.custom-option {
+    padding: 1.2rem; cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-secondary);
+    transition: all 0.2s ease;
+}
+.custom-option:last-child { border-bottom: none; }
+.custom-option:hover, .custom-option.selected {
+    background: rgba(0, 230, 118, 0.2); color: #fff; padding-left: 1.8rem;
+}
+
+/* Number Inputs */
+input[type="number"] {
+    width: 100%; padding: 1.2rem; background: rgba(0, 0, 0, 0.6);
+    border: 2px solid var(--glass-border); border-radius: 12px;
+    color: #fff; font-size: 1.1rem; cursor: text;
+    transition: all 0.3s ease; outline: none; -webkit-appearance: none;
+}
+input[type="number"]:focus {
+    border-color: var(--accent-color); box-shadow: 0 0 20px var(--accent-glow); background: rgba(0, 0, 0, 0.8);
+}
+
+.checkbox-group { justify-content: flex-end; }
+.checkbox-group label {
+    cursor: pointer; background: rgba(0,0,0,0.6); padding: 1.2rem;
+    border-radius: 12px; border: 2px solid var(--glass-border);
+    display: flex; align-items: center; gap: 1rem;
+}
+.checkbox-group input[type="checkbox"] {
+    width: 26px; height: 26px; accent-color: var(--accent-color); cursor: pointer;
+}
+.check-text strong { display: block; font-size: 1.05rem; color: #fff;}
+.check-text small { color: var(--text-secondary); font-size: 0.9rem;}
+
+
+/* Buttons */
+.btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 1rem;
+    padding: 1.3rem 2.5rem; border-radius: 15px; font-weight: 800; font-size: 1.2rem;
+    cursor: pointer; border: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 100%; text-transform: uppercase; letter-spacing: 1px;
+}
+.primary-btn { background: var(--primary-gradient); color: #000; box-shadow: 0 5px 20px var(--accent-glow); }
+.primary-btn:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 10px 30px var(--accent-glow); }
+
+.text-btn {
+    background: transparent; color: var(--text-secondary); width: auto;
+    padding: 0.8rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; font-size: 1rem; font-weight: 600;
+}
+.text-btn:hover { color: #fff; background: rgba(255,255,255,0.1); transform: translateX(-5px); box-shadow: 0 0 15px rgba(255,255,255,0.1);}
+
+
+/* Results */
+.result-header { margin-bottom: 2rem; display: flex; flex-direction: column; align-items: flex-start;}
+.badge {
+    background: var(--accent-color); color: #000; padding: 0.5rem 1.2rem; border-radius: 30px;
+    font-size: 0.9rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.5rem;
+}
+
+.result-section { margin-bottom: 1.5rem; }
+.result-section h3 { margin-bottom: 1rem; display: flex; align-items: center; gap: 0.8rem; font-size: 1.4rem;}
+.result-section p { color: var(--text-secondary); font-size: 1.15rem; }
+
+/* Highlight Box for Steps */
+.highlight-box {
+    background: rgba(0, 230, 118, 0.08); border: 1px solid rgba(0, 230, 118, 0.3);
+    padding: 2.5rem; border-radius: 20px; box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+}
+.icon-primary { color: var(--accent-color); font-size: 1.8rem;}
+
+.divider { border: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); margin: 3rem 0; }
+
+.step-list { list-style: none; counter-reset: custom-counter; display: flex; flex-direction: column; gap: 1.2rem;}
+.step-list li {
+    position: relative; padding-left: 4rem; color: #fff; font-size: 1.15rem;
+    background: rgba(0,0,0,0.3); padding-top: 1.2rem; padding-bottom: 1.2rem; padding-right: 1.5rem;
+    border-radius: 15px; border: 1px solid var(--glass-border);
+}
+.step-list li::before {
+    counter-increment: custom-counter; content: counter(custom-counter);
+    position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%);
+    width: 35px; height: 35px; background: var(--accent-color); color: #000;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; font-weight: 800; box-shadow: 0 0 15px var(--accent-glow);
+}
+
+/* DIY Cards Grid - Ensuring 4 look amazing */
+.diy-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Force 2 columns = 4 total */
+    gap: 1.5rem;
+}
+.diy-card {
+    padding: 1.8rem; display: flex; flex-direction: column; gap: 1rem;
+    border-top: 5px solid var(--accent-color); background: rgba(0,0,0,0.4);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+.diy-icon {
+    width: 50px; height: 50px; border-radius: 50%; background: rgba(0, 230, 118, 0.15);
+    color: var(--accent-color); display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
+}
+.diy-content h4 { font-size: 1.2rem; margin-bottom: 0.5rem; color: #fff;}
+.diy-content p { font-size: 1rem; color: var(--text-secondary); line-height: 1.5;}
+
+.action-footer { text-align: center; padding-top: 3rem; border-top: 1px dashed rgba(255,255,255,0.2); }
+.badge-large { background: rgba(0, 230, 118, 0.2); padding: 0.4rem 1rem; border-radius: 10px; font-size: 1.5rem;}
+
+
+/* Dashboard */
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.stat-card { padding: 2.5rem; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 1.5rem; background: rgba(0,0,0,0.4);}
+.stat-icon { font-size: 3rem; color: #fff; background: rgba(255,255,255,0.05); width: 90px; height: 90px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 2px solid var(--glass-border);}
+.stat-info h3 { font-size: 1.1rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.5rem;}
+.stat-info p { font-size: 3rem; font-weight: 800; color: #fff; }
+
+.border-accent { border-color: var(--accent-glow); box-shadow: 0 0 30px rgba(0,230,118,0.1) inset;}
+.bg-accent-glow { background: rgba(0,230,118,0.15); border-color: var(--accent-color); box-shadow: 0 0 20px rgba(0,230,118,0.4);}
+
+.history-list { display: flex; flex-direction: column; gap: 1.2rem; }
+.history-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 1.5rem; background: rgba(0,0,0,0.6); border: 1px solid var(--glass-border); border-radius: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.history-item:hover { transform: translateX(8px); background: rgba(255,255,255,0.08); box-shadow: -5px 5px 15px rgba(0,0,0,0.3);}
+.history-item .details { font-weight: 600; font-size: 1.2rem;}
+.history-item .date { color: var(--text-secondary); font-size: 1rem; }
+.empty-state { text-align: center; color: var(--text-secondary); padding: 4rem; font-style: italic; background: rgba(0,0,0,0.4); border-radius: 15px;}
+
+@media (max-width: 768px) {
+    .row { flex-direction: column; gap: 1rem; }
+    .title { font-size: 2.5rem; }
+    .card { padding: 1.5rem; }
+    .navbar { flex-direction: column; gap: 1rem; padding: 1rem; border-radius: 20px; }
+    .stats-grid { grid-template-columns: 1fr; }
+    .stat-card { flex-direction: row; text-align: left; padding: 1.5rem;}
+    .stat-icon { width: 70px; height: 70px; font-size: 2rem;}
+    .diy-grid { grid-template-columns: 1fr; } 
+}

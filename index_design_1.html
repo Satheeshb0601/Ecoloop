@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoLoop | Smart Waste Management</title>
+    <!-- Modern Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS (Loading Design 1) -->
+    <link rel="stylesheet" href="css/style_design_1.css">
+</head>
+<body>
+    <!-- Abstract Interactive Particle Background -->
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+
+    <nav class="navbar glass">
+        <div class="logo">
+            <i class="fa-solid fa-arrows-rotate logo-icon"></i> 
+            <span>Eco<span class="text-accent">Loop</span></span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="#" id="nav-home" class="active">Home</a></li>
+            <li><a href="#" id="nav-dashboard">Dashboard</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <!-- view: HOME / FORM -->
+        <section id="view-home" class="view active">
+            <div class="hero">
+                <h1 class="title">Smarter Disposal, <br/> <span class="text-accent glow-text">Greener Planet.</span></h1>
+                <p class="subtitle">Not sure how to handle your daily waste at home? Select an item below and get clear, practical guidance.</p>
+            </div>
+
+            <div class="card glass interactable">
+                <form id="disposal-form">
+                    
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-trash-can text-accent"></i> What are you throwing away?</label>
+                        
+                        <!-- Custom Select Dropdown UI -->
+                        <div class="custom-select-wrapper">
+                            <div class="custom-select" id="custom-select-ui">
+                                <div class="custom-select-trigger">
+                                    <span id="custom-select-text">Select a waste type...</span>
+                                    <i class="fa-solid fa-chevron-down text-accent"></i>
+                                </div>
+                                <div class="custom-options">
+                                    <div class="custom-option" data-value="organic">Organic (Vegetable peels, Leftover Food)</div>
+                                    <div class="custom-option" data-value="plastic">Plastics (Bottles, Polythene, Containers)</div>
+                                    <div class="custom-option" data-value="paper">Paper (Newspapers, Cardboard Boxes)</div>
+                                    <div class="custom-option" data-value="ewaste">E-Waste (Phones, Wires, Batteries)</div>
+                                    <div class="custom-option" data-value="glass">Glass (Jars, Broken Mirrors)</div>
+                                    <div class="custom-option" data-value="metal">Metal (Food Tins, Cans, Foil)</div>
+                                    <div class="custom-option" data-value="clothes">Old Clothes (Shirts, Trousers, Bedsheets)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hidden Native Select for logical form validation -->
+                        <select id="waste-type" style="display:none;" required>
+                            <option value="" disabled selected>Select...</option>
+                            <option value="organic">Organic</option>
+                            <option value="plastic">Plastics</option>
+                            <option value="paper">Paper</option>
+                            <option value="ewaste">E-Waste</option>
+                            <option value="glass">Glass</option>
+                            <option value="metal">Metal</option>
+                            <option value="clothes">Old Clothes</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group half">
+                            <label for="quantity"><i class="fa-solid fa-weight-scale text-accent"></i> Quantity (kg)</label>
+                            <input type="number" id="quantity" step="0.1" min="0.1" placeholder="e.g. 1.5" required>
+                        </div>
+                        <div class="form-group half checkbox-group">
+                            <label for="segregated" class="interactable-sm">
+                                <input type="checkbox" id="segregated">
+                                <div class="check-text">
+                                    <strong>Is it kept separate?</strong>
+                                    <small>Not mixed with other waste</small>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn primary-btn pulse-anim mt-1">
+                        <span>Get Instant Recommendation</span> 
+                        <i class="fa-solid fa-bolt"></i>
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- view: RESULTS -->
+        <section id="view-result" class="view hidden">
+            <button id="btn-back" class="btn text-btn">
+                <i class="fa-solid fa-arrow-left"></i> Change Selection
+            </button>
+            
+            <div class="result-header">
+                <span class="badge" id="res-badge">Recommended Action</span>
+                <h2 class="title" id="res-method" style="margin-top: 0.5rem;">Composting</h2>
+            </div>
+
+            <div class="card glass interactable">
+                
+                <!-- Actionable Steps Box -->
+                <div class="result-section highlight-box">
+                    <h3><i class="fa-solid fa-list-check icon-primary"></i> Easy Steps for Disposal</h3>
+                    <p class="subtitle" style="margin-bottom: 1.5rem; font-size: 1.05rem;">Follow these simple instructions to handle it correctly at home.</p>
+                    <ul id="res-steps" class="step-list">
+                        <!-- populated via JS -->
+                    </ul>
+                </div>
+                
+                <div class="row mt-2" style="margin-bottom: 1rem;">
+                    <div class="result-section half">
+                        <h3><i class="fa-solid fa-circle-info text-accent"></i> Why do we do this?</h3>
+                        <p id="res-reasoning">Biodegradable material that decomposes quickly and enriches soil.</p>
+                    </div>
+    
+                    <div class="result-section half">
+                        <h3><i class="fa-solid fa-hourglass-half text-accent"></i> How long does it last?</h3>
+                        <p id="res-decomposition">Takes around 2-6 months to decompose completely.</p>
+                    </div>
+                </div>
+
+                <hr class="divider">
+
+                <div class="result-section">
+                    <h3 style="font-size: 1.8rem; margin-bottom: 1rem;"><i class="fa-solid fa-lightbulb text-accent glow-text"></i> Brilliant Upcycling Ideas!</h3>
+                    <p class="subtitle" style="margin-bottom: 2rem;">Why throw it away when it can be useful around the house? Try these 4 methods:</p>
+                    <div id="res-diy" class="diy-grid">
+                        <!-- Will hold exactly 4 items in a 2x2 grid -->
+                    </div>
+                </div>
+                
+                <div class="action-footer mt-2">
+                     <p style="font-size: 1.2rem;">By doing this, you are preventing <b id="res-co2" class="text-accent badge-large glow-text">0</b> <b class="text-accent glow-text">kg of CO₂</b> pollution!</p>
+                     <button id="btn-log" class="btn primary-btn mt-2 interactable heartbeat" style="max-width: 400px; margin: 1.5rem auto 0 auto;">
+                        <i class="fa-solid fa-leaf"></i> Add Points to Dashboard
+                     </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- view: DASHBOARD -->
+        <section id="view-dashboard" class="view hidden">
+            <div class="hero">
+                <h2 class="title">My Impact <span class="text-accent glow-text">Dashboard</span></h2>
+                <p class="subtitle">See everything you have saved from the dustbin.</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card glass interactable-sm">
+                    <div class="stat-icon"><i class="fa-solid fa-recycle"></i></div>
+                    <div class="stat-info">
+                        <h3>Waste Saved</h3>
+                        <p id="dash-kg">0 kg</p>
+                    </div>
+                </div>
+                <div class="stat-card glass interactable-sm">
+                    <div class="stat-icon"><i class="fa-solid fa-cloud"></i></div>
+                    <div class="stat-info">
+                        <h3>CO₂ Prevented</h3>
+                        <p id="dash-co2">0 kg</p>
+                    </div>
+                </div>
+                <div class="stat-card glass interactable-sm border-accent">
+                    <div class="stat-icon bg-accent-glow"><i class="fa-solid fa-trophy text-accent"></i></div>
+                    <div class="stat-info">
+                        <h3>Eco Rank</h3>
+                        <p id="dash-level" class="text-accent glow-text" style="font-size: 2rem;">Beginner</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section mt-2 glass p-2 rounded interactable" style="margin-top: 3rem;">
+                <h3 style="margin-bottom: 2rem; font-size: 1.5rem;"><i class="fa-solid fa-clock-rotate-left text-accent"></i> My Recent Contributions</h3>
+                <div id="dash-history" class="history-list">
+                    <!-- populated via JS -->
+                </div>
+                <div style="text-align: right; margin-top: 1rem;">
+                    <button id="btn-clear" class="btn text-btn mt-1"><i class="fa-solid fa-trash"></i> Delete History</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Scripts -->
+    <script src="js/rules.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
